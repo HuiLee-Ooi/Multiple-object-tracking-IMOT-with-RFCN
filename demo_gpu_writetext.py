@@ -16,58 +16,12 @@ import cv2
 # cap = cv2.VideoCapture(1)
 # cap = cv2.VideoCapture('/home/huooi/HL_Dataset/UrbanTracker/rouen_video.avi')
 # input_file = '/home/huooi/HL_Dataset/UrbanTracker/sherbrooke_video.avi'
-input_file = '/home/huooi/HL_Dataset/UrbanTracker/sherbrooke_frames/%08d.jpg'
+input_file = '/home/huooi/HL_Dataset/UrbanTracker/rouen_frames/%08d.jpg'
 cap = cv2.VideoCapture(input_file)
 
-# cap = cv2.VideoCapture ('/home/huooi/HL_Dataset/CDNet/dataset2014/dataset/baseline/pedestrians/input/in%06d.jpg')
-# This is needed since the notebook is stored in the object_detection folder.
-# sys.path.append("..")
-
-
-
-# ## Object detection imports
-# Here are the imports from the object detection module.
-
-# In[3]:
 
 from object_detection.utils import label_map_util
-
 from object_detection.utils import visualization_utils as vis_util
-
-
-# # Model preparation
-
-# ## Variables
-#
-# Any model exported using the `export_inference_graph.py` tool can be loaded here simply by changing `PATH_TO_CKPT` to point to a new .pb file.
-#
-# By default we use an "SSD with Mobilenet" model here. See the [detection model zoo](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md) for a list of other models that can be run out-of-the-box with varying speeds and accuracies.
-
-# In[4]:
-
-# What model to download.
-# MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
-# MODEL_FILE = MODEL_NAME + '.tar.gz'
-# DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
-
-# Path to frozen detection graph. This is the actual model that is used for the object detection.
-# PATH_TO_CKPT = MODEL_NAME + '/frozen_inference_graph.pb'
-# PATH_TO_CKPT ='/home/huooi/HL_Proj/PycharmProjects/models/object_detection/HL_testing/train/rfcn_resnet101_coco_2017_11_08/frozen_inference_graph.pb'
-
-
-
-# List of the strings that is used to add correct label for each box.
-# PATH_TO_LABELS = os.path.join('data', 'mscoco_label_map.pbtxt')
-# PATH_TO_CKPT ='/home/huooi/HL_Proj/PycharmProjects/models/object_detection/HL_testing/train/rfcn_resnet101_coco_2017_11_08/saved_model/saved_model.pb'
-# PATH_TO_CKPT ='/home/huooi/HL_Proj/PycharmProjects/models/object_detection/HL_testing/train/rfcn_resnet101_coco_2017_11_08/frozen_inference_graph.pb'
-
-# PATH_TO_CKPT ='/home/huooi/HL_Proj/PycharmProjects/models/object_detection/HL_testing/train/ssd_inception_v2_coco_2017_11_17/saved_model/saved_model.pb'
-# PATH_TO_CKPT ='/home/huooi/HL_Proj/PycharmProjects/models/object_detection/HL_testing/train/ssd_inception_v2_coco_2017_11_17/frozen_inference_graph.pb'
-
-# COCO pretrained weight
-# PATH_TO_CKPT ='/home/huooi/HL_Proj/PycharmProjects/models/object_detection/HL_testing/train/faster_rcnn_resnet101_coco_2017_11_08/frozen_inference_graph.pb'
-# PATH_TO_LABELS = '/home/huooi/HL_Proj/PycharmProjects/models/object_detection/data/mscoco_label_map.pbtxt'
-# NUM_CLASSES = 90
 
 # MIO finetuned weight from COCO
 # PATH_TO_CKPT = '/home/huooi/HL_Proj/PycharmProjects/models/object_detection/MIO/mio-ssd-inc/train/output_inference_graph3.pb'
@@ -187,12 +141,20 @@ with detection_graph.as_default():
       )
       final_score = np.squeeze(scores)
       count = 0
+
       for i in range((np.squeeze(num_detections))):
-        # if scores is None or final_score[i] > 0.5:
-          if (scores is None or final_score[i] > 0.5) and (
+        if (scores is None or final_score[i] > 0.5) and (
             (np.reshape(classes, int(np.squeeze(num_detections)), 1)[i]) != 7.0):
             count = count + 1
-            outF.write("frame_num")
+            ymin = int(np.round(np.squeeze(boxes)[i, 0] * height))
+            xmin = int(np.round(np.squeeze(boxes)[i, 1] * width))
+            ymax = int(np.round(np.squeeze(boxes)[i, 2] * height))
+            xmax = int(np.round(np.squeeze(boxes)[i, 3] * width))
+            ty = np.reshape(classes, int(np.squeeze(num_detections)), 1)[i]
+            ty_conf = final_score[i]
+            # print (ty)
+            # print (ty_conf)
+            outF.write(str(frame_num) + "," + str(ymin) + "," + str(ymax) + "," + str(xmin) + "," + str(xmax) + "," + str (np.reshape(classes, int(np.squeeze(num_detections)), 1)[i]) + ","  + str(final_score[i]))
             outF.write("\n")
       # print (np.squeeze(classes).astype(np.int32))
       frame_num = frame_num + 1
@@ -204,7 +166,8 @@ with detection_graph.as_default():
       # cv2.imshow('object detection', cv2.resize(image_np, (800,600)))
       print("Frame " + str(frame_num) + " with " + str(count) + " objects")
       cv2.imshow('object detection', cv2.resize(image_np, (width, height)))
-      cv2.waitKey(0)
+      # cv2.waitKey(0)
+      cv2.waitKey(5)
     outF.close()
       # if cv2.waitKey(25) & 0xFF == ord('q'):
       #   cv2.destroyAllWindows()

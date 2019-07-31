@@ -17,6 +17,7 @@ import cv2
 # cap = cv2.VideoCapture('/home/huooi/HL_Dataset/UrbanTracker/rouen_video.avi')
 # input_file = '/home/huooi/HL_Dataset/UrbanTracker/sherbrooke_video.avi'
 input_file = '/home/huooi/HL_Dataset/UrbanTracker/sherbrooke_frames/%08d.jpg'
+input_file = '/usagers2/huooi/dev/HL_Dataset/UA Detrac Detection/Insight-MVT_Annotation_Test/MVI_39031/img%05d.jpg'
 cap = cv2.VideoCapture(input_file)
 
 # cap = cv2.VideoCapture ('/home/huooi/HL_Dataset/CDNet/dataset2014/dataset/baseline/pedestrians/input/in%06d.jpg')

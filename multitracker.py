@@ -12,7 +12,7 @@ class Tracker(object):
     Attributes:
         None
     """
-    def __init__(self, cost_feat_thresh, max_trace_length, track_step_overlap, min_hits, dist_thresh, im_height, im_width, ope_mode):
+    def __init__(self, cost_feat_thresh, max_trace_length, track_step_overlap, min_hits, dist_thresh, im_height, im_width):
         """Initialize variable used by Tracker class
         Args:
             dist_thresh: thrsh for distance comparison
@@ -42,7 +42,7 @@ class Tracker(object):
         self.im_width = im_width
         self.trackCount = 0
         self.framecount = 0
-        self.operation_mode = ope_mode
+        # self.operation_mode = ope_mode
 
     def FeatureExtractorbyFeat(self, list_in, feat_index):
         # Extract and Reshape list[feat][obj] according to called feature index
